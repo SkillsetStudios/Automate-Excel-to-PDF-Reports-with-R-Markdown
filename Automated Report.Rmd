@@ -1,0 +1,66 @@
+---
+title: "Company ABC Employee Report"
+subtitle: "Combined Data Report"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+# Load necessary packages
+library(readxl)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+library(scales)
+```
+
+```{r, echo=FALSE}
+file1 <- "example1.xlsx"
+file2 <- "example2.xlsx"
+file3 <- "example3.xlsx"
+```
+
+```{r,echo=FALSE}
+# Read all sheets from both Excel files into a list of data frames
+sheets_file1 = lapply(excel_sheets(file1), function(sheet) read_excel(file1, sheet = sheet))
+sheets_file2 = lapply(excel_sheets(file2), function(sheet) read_excel(file2, sheet = sheet))
+sheets_file3 = lapply(excel_sheets(file3), function(sheet) read_excel(file3, sheet = sheet))
+
+# Combine all sheets into one data frame
+combined_data = bind_rows(sheets_file1, sheets_file2, sheets_file3)
+```
+
+```{r, echo=FALSE}
+# Import the data into R
+Data = combined_data
+
+# Convert Amount and Rate to a currency format
+Data$Amount = label_dollar()(Data$Amount)
+Data$Rate = label_dollar()(Data$Rate)
+
+# Convert the Date to short date format
+Data$Date = format(Data$Date, "%m/%d/%Y")
+
+# Align the Hours column to the left
+Data$Hours = format(Data$Hours, justify = "left")
+
+```
+
+```{r, echo=FALSE}
+# Display the table with customized formatting
+kable(Data) %>%
+  kableExtra::kable_styling(
+    font_size = 14,  # Table font size
+    full_width = FALSE,  # Do not stretch the table
+    position = "center",  # Center the table
+  ) %>%
+  kableExtra::column_spec(1, width = "5cm", bold = FALSE)# Customize first column
+```
+
+
+
+
+
+
+
+
+
